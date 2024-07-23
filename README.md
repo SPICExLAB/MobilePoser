@@ -2,7 +2,7 @@
 
 <br>
 <div align="center">
-<img src="./assets/teaser.png" alt="teaser.png" width="100%">
+<img src="teaser.png" alt="teaser.png" width="100%">
 </div>
 <br>
 
