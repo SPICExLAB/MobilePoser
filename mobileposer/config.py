@@ -44,18 +44,18 @@ class amass:
     """AMASS dataset information."""
     # device-location combinationsa
     combos = {
-        'lw_rp_h': [0, 3, 4],
-        'rw_rp_h': [1, 3, 4],
-        'lw_lp_h': [0, 2, 4],
-        'rw_lp_h': [1, 2, 4],
-        'lw_lp': [0, 2],
+        # 'lw_rp_h': [0, 3, 4],
+        # 'rw_rp_h': [1, 3, 4],
+        # 'lw_lp_h': [0, 2, 4],
+        # 'rw_lp_h': [1, 2, 4],
+        # 'lw_lp': [0, 2],
         'lw_rp': [0, 3],
-        'rw_lp': [1, 2],
-        'rw_rp': [1, 3],
-        'lp_h': [2, 4],
-        'rp_h': [3, 4],
-        'lp': [2],
-        'rp': [3],
+        # 'rw_lp': [1, 2],
+        # 'rw_rp': [1, 3],
+        # 'lp_h': [2, 4],
+        # 'rp_h': [3, 4],
+        # 'lp': [2],
+        # 'rp': [3],
      }
     acc_scale = 30
     vel_scale = 2
