@@ -16,7 +16,7 @@ import pickle
 
 from articulate.math import *
 from mobileposer.models import *
-from mobileposer.utils import *
+from mobileposer.utils.model_utils import *
 from mobileposer.config import *
 
 # Configurations 
