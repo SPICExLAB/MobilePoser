@@ -16,11 +16,14 @@ import pickle
 
 from articulate.math import *
 from mobileposer.models import *
-from mobileposer.utils import *
+from mobileposer.utils.model_utils import *
 from mobileposer.config import *
 
 # Configurations 
-USE_PHONE_AS_WATCH = True
+USE_PHONE_AS_WATCH = False
+USE_RIGHT_WATCH = True
+RIGHT_ARM = [14, 17, 19, 21, 23]
+LEFT_ARM = [13, 16, 18, 20, 22]
 
 
 class IMUSet:
@@ -219,30 +222,36 @@ if __name__ == '__main__':
         ori = torch.zeros_like(_ori)
 
         # device combo
-        combo = 'lw_rp'
+        combo = 'rw_rp'
         c = amass.combos[combo]
 
         if USE_PHONE_AS_WATCH:
             # set watch value to phone
-            acc[:, [0]] = _acc[:, [3]]
-            ori[:, [0]] = _ori[:, [3]]
+            acc[:, [1]] = _acc[:, [3]]
+            ori[:, [1]] = _ori[:, [3]]
+        elif USE_RIGHT_WATCH:
+            acc[:, [1]] = _acc[:, [0]]
+            ori[:, [1]] = _ori[:, [0]]
         else:
             # filter and concat input
             acc[:, c] = _acc[:, c] 
             ori[:, c] = _ori[:, c]
         
         imu_input = torch.cat([acc.flatten(1), ori.flatten(1)], dim=1)
-        # imu_input = torch.cat([_acc[:, c].flatten(1), _ori[:, c].flatten(1)], dim=1)
 
         # predict pose and translation
         with torch.no_grad():
             output = model.forward_online(imu_input.squeeze(0), [imu_input.shape[0]])
-            pred_pose = output[0] # [24, 3, 3]
+            pred_pose = output[0] # [24, 9]
             pred_tran = output[2] # [3]
-        
+
+        # # freeze left arm pose
+        for j in LEFT_ARM:
+            pred_pose[j] = torch.eye(3).view(9)
+
         # convert rotmatrix to axis angle
         pose = rotation_matrix_to_axis_angle(pred_pose.view(1, 216)).view(72)
-        tran = pred_tran
+        tran = torch.zeros(3)
 
         # keep track of data
         if args.save:

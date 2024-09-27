@@ -27,7 +27,7 @@ class paths:
 class model_config:
     """MobilePoser Model configurations."""
     # device
-    device = torch.device('mps' if torch.backends.mps.is_available() else 'cuda:0' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
     # joint set
     n_joints = 5                        # (head, right-wrist, left-wrist, right-hip, left-hip)
@@ -52,7 +52,7 @@ class amass:
         # 'lw_lp': [0, 2],
         'lw_rp': [0, 3],
         # 'rw_lp': [1, 2],
-        # 'rw_rp': [1, 3],
+        'rw_rp': [1, 3],
         # 'lp_h': [2, 4],
         # 'rp_h': [3, 4],
         # 'lp': [2],

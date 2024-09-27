@@ -17,6 +17,9 @@ from numpy.linalg import inv
 from collections import deque
 
 
+PLOT = False
+
+
 class Plot:
     def __init__(self, width, height, max_points=100, y_range=(-1.0, 1.0)):
         """Initialize the plot for visualizing acceleration values."""
@@ -192,7 +195,8 @@ class PyGameManager:
         self.width = width
         self.height = height
         self.cubes = []  # List to hold Cube objects
-        self.plot = Plot(width, 200)  # Create a plot for acceleration data
+        if PLOT:
+            self.plot = Plot(width, 200)  # Create a plot for acceleration data
         self.clock = pygame.time.Clock()
         self.init_pygame()
 
@@ -247,10 +251,11 @@ class PyGameManager:
         for cube in self.cubes:
             cube.draw()
 
-        # draw the acceleration plot
-        glViewport(0, 0, self.width, 200)
-        self.plot.draw()
-        glViewport(0, 200, self.width, self.height - 200)
+        if PLOT:
+            # draw the acceleration plot
+            glViewport(0, 0, self.width, 200)
+            self.plot.draw()
+            glViewport(0, 200, self.width, self.height - 200)
 
         # update the screen
         pygame.display.flip()
@@ -258,6 +263,7 @@ class PyGameManager:
     def update(self, acc):
         """Update the screen with new data and render cubes."""
         self.clock.tick(60)
-        if acc is not None:
-            self.plot.update(acc) # draw acceleration graph
+        if PLOT:
+            if acc is not None:
+                self.plot.update(acc) # draw acceleration graph
         self.draw_scene() # draw cubes  
