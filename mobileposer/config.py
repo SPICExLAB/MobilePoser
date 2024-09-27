@@ -20,13 +20,14 @@ class paths:
     weights_file = root_dir / 'checkpoints/model_finetuned.pth'
     
     processed_datasets25 = root_dir / "data/processed_25fps"
+    processed_dev = root_dir / "data/processed_dev"       # subset for fast testing
     dev_data = root_dir / "data/dev_dataset" # stores data for development testing 
 
 
 class model_config:
     """MobilePoser Model configurations."""
     # device
-    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('mps' if torch.backends.mps.is_available() else 'cuda:0' if torch.cuda.is_available() else 'cpu')
     
     # joint set
     n_joints = 5                        # (head, right-wrist, left-wrist, right-hip, left-hip)

@@ -1,5 +1,9 @@
 import os
 
+from mobileposer.models import MobilePoserNet, Poser, Joints, FootContact, Velocity
+
+# List of available modules
+MODULES = {'poser': Poser, 'joints': Joints, 'contact': FootContact, 'velocity': Velocity}
 
 # Calibration constants
 KEYS = ['unix_timestamp', 'sensor_timestamp', 'accel_x', 'accel_y', 'accel_z', 'quart_x', 'quart_y', 'quart_z', 'quart_w', "roll", "pitch", "yaw"]

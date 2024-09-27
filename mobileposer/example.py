@@ -6,9 +6,9 @@ from torch.nn import functional as F
 import numpy as np
 from argparse import ArgumentParser
 
-from config import *
-from viewer import Viewer
-from utils import load_model
+from mobileposer.config import *
+from mobileposer.utils.model_utils import *
+from mobileposer.viewer import Viewer
 
 
 if __name__ == "__main__":

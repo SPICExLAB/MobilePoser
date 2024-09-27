@@ -6,6 +6,7 @@ from torch.nn import functional as F
 import numpy as np
 
 from mobileposer.config import *
+from mobileposer.utils.model_utils import reduced_pose_to_full
 import mobileposer.articulate as art
 from mobileposer.models.rnn import RNN
 
@@ -49,7 +50,7 @@ class Poser(L.LightningModule):
         return model
 
     def _reduced_global_to_full(self, reduced_pose):
-        pose = r6d_to_rotation_matrix(reduced_pose).view(-1, joint_set.n_reduced, 3, 3)
+        pose = art.math.r6d_to_rotation_matrix(reduced_pose).view(-1, joint_set.n_reduced, 3, 3)
         pose = reduced_pose_to_full(pose.unsqueeze(0)).squeeze(0).view(-1, 24, 3, 3)
         pred_pose = self.global_to_local_pose(pose)
         for ignore in joint_set.ignored: pred_pose[:, ignore] = torch.eye(3, device=self.C.device)

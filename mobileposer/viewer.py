@@ -7,8 +7,8 @@ from mpl_toolkits.mplot3d import Axes3D
 
 from mobileposer.models import *
 from mobileposer.config import *
+from mobileposer.utils.model_utils import *
 from mobileposer.viewers import SMPLViewer
-from mobileposer.utils import load_model
 from mobileposer.loader import DataLoader
 import mobileposer.articulate as art
 

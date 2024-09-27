@@ -8,15 +8,8 @@ from typing import List
 import lightning as L
 from tqdm import tqdm 
 
-from mobileposer.models import MobilePoserNet, Poser, Leaf, Joints, FootContact, Velocity
-
-MODULES = {'poser': Poser, 'joints': Joints, 'contact': FootContact, 'velocity': Velocity}
-
 
 def train_module(module: str):
-
-    
-
     # setup Wandb logger
     wandb_logger = WandbLogger(
         project=module_name, 

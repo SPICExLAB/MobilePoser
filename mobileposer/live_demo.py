@@ -20,7 +20,7 @@ from mobileposer.utils import *
 from mobileposer.config import *
 
 # Configurations 
-USE_PHONE_AS_WATCH = False
+USE_PHONE_AS_WATCH = True
 
 
 class IMUSet:
@@ -224,8 +224,8 @@ if __name__ == '__main__':
 
         if USE_PHONE_AS_WATCH:
             # set watch value to phone
-            acc[:, [1]] = _acc[:, [3]]
-            ori[:, [1]] = _ori[:, [3]]
+            acc[:, [0]] = _acc[:, [3]]
+            ori[:, [0]] = _ori[:, [3]]
         else:
             # filter and concat input
             acc[:, c] = _acc[:, c] 

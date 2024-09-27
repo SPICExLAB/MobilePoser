@@ -10,7 +10,7 @@ from tqdm import tqdm
 import time
 
 from mobileposer.config import *
-from mobileposer.utils import *
+from mobileposer.utils.model_utils import reduced_pose_to_full
 from mobileposer.helpers import *
 import mobileposer.articulate as art
 from mobileposer.models.poser import Poser

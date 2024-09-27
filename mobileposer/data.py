@@ -22,7 +22,7 @@ class PoseDataset(Dataset):
         self.evaluate = evaluate
         self.finetune = finetune
         self.bodymodel = art.model.ParametricModel(paths.smpl_file)
-        self.combos = amass.combos.items()
+        self.combos = list(amass.combos.items())
         self.data = self._prepare_dataset()
 
     def _get_data_files(self, data_folder):
@@ -66,15 +66,21 @@ class PoseDataset(Dataset):
             self._process_combo_data(acc, ori, pose, joint, tran, foot, data)
 
     def _process_combo_data(self, acc, ori, pose, joint, tran, foot, data):
-        for _, combo in self.combos:
-            imu_input = torch.cat([acc[:, combo].flatten(1), ori[:, combo].flatten(1)], dim=1)
+        for _, c in self.combos:
+            # mask out layers for different subsets
+            combo_acc = torch.zeros_like(acc)
+            combo_ori = torch.zeros_like(ori)
+            combo_acc[:, c] = acc[:, c]
+            combo_ori[:, c] = ori[:, c]
+            imu_input = torch.cat([combo_acc.flatten(1), combo_ori.flatten(1)], dim=1) # [[N, 15], [N, 45]] => [N, 60] 
+
             data_len = len(imu_input) if self.evaluate else datasets.window_length
             
             for key, value in zip(['imu_inputs', 'pose_outputs', 'joint_outputs', 'tran_outputs'],
                                 [imu_input, pose, joint, tran]):
                 data[key].extend(torch.split(value, data_len))
 
-            if not (self.eval or self.finetune):
+            if not (self.evaluate or self.finetune):
                 self._process_velocity_data(joint, tran, foot, data_len, data)
 
     def _process_velocity_data(self, joint, tran, foot, data_len, data):
@@ -91,11 +97,12 @@ class PoseDataset(Dataset):
         num_pred_joints = len(amass.pred_joints_set)
         pose = art.math.rotation_matrix_to_r6d(self.data['pose_outputs'][idx]).reshape(-1, num_pred_joints, 6)[:, amass.pred_joints_set].reshape(-1, 6*num_pred_joints)
 
-        if self.eval or self.finetune:
+        if self.evaluate or self.finetune:
             return imu, pose, joint, tran
 
         vel = self.data['vel_outputs'][idx].float()
         contact = self.data['foot_outputs'][idx].float()
+
         return imu, pose, joint, tran, vel, contact
 
     def __len__(self):
@@ -110,18 +117,23 @@ def pad_seq(batch):
 
     inputs, poses, joints, trans = zip(*[(item[0], item[1], item[2], item[3]) for item in batch])
     inputs, input_lengths = _pad(inputs)
+    poses, pose_lengths = _pad(poses)
+    joints, joint_lengths = _pad(joints)
+    trans, tran_lengths = _pad(trans)
     
-    outputs = {
-        'poses': _pad(poses),
-        'joints': _pad(joints),
-        'trans': _pad(trans)
-    }
-    output_lengths = {'poses': len(poses), 'joints': len(joints), 'trans': len(trans)}
+    outputs = {'poses': poses, 'joints': joints, 'trans': trans}
+    output_lengths = {'poses': pose_lengths, 'joints': joint_lengths, 'trans': tran_lengths}
 
-    if len(batch[0]) > 4: # include velocity and foot contact, if available
+    if len(batch[0]) > 5: # include velocity and foot contact, if available
         vels, foots = zip(*[(item[4], item[5]) for item in batch])
-        outputs['vels'] = _pad(vels)
-        outputs['foot_contacts'] = _pad(foots)
+
+        # foot contact 
+        foot_contacts, foot_contact_lengths = _pad(foots)
+        outputs['foot_contacts'], output_lengths['foot_contacts'] = foot_contacts, foot_contact_lengths
+
+        # root velocities
+        vels, vel_lengths = _pad(vels)
+        outputs['vels'], output_lengths['vels'] = vels, vel_lengths
 
     return (inputs, input_lengths), (outputs, output_lengths)
 

@@ -3,7 +3,7 @@ import numpy as np
 import torch
 
 from mobileposer.config import *
-from mobileposer.utils import *
+from mobileposer.utils.model_utils import *
 
 
 class DataLoader:

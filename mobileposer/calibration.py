@@ -19,7 +19,7 @@ from mobileposer.config import *
 from mobileposer.utils.sensor_utils import *
 from mobileposer.utils.socket_utils import * 
 from mobileposer.utils.draw_utils import *
-from mobileposer.cube import *
+from mobileposer.visualizer import *
 
 
 if __name__ == "__main__":
@@ -79,7 +79,7 @@ if __name__ == "__main__":
                     prev_timestamp = curr_timestamp
 
                 # Draw cubes using the PyGameManager
-                manager.update()
+                manager.update(glb_acc)
 
         except KeyboardInterrupt:
             print("==== Close Socket ====")
