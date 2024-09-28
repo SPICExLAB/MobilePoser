@@ -3,6 +3,7 @@ Code adapted from: https://github.com/Xinyu-Yi/TransPose/blob/main/live_demo.py
 """
 
 import os
+import sys
 import time
 import socket
 import threading
@@ -14,16 +15,38 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 from pygame.time import Clock
 import pickle
 
+import pyqtgraph as pg
+import pyqtgraph.opengl as gl
+from PyQt5.QtWidgets import QApplication
+from pyqtgraph.Qt import QtCore
+
 from articulate.math import *
 from mobileposer.models import *
 from mobileposer.utils.model_utils import *
 from mobileposer.config import *
 
 # Configurations 
-USE_PHONE_AS_WATCH = False
-USE_RIGHT_WATCH = True
-RIGHT_ARM = [14, 17, 19, 21, 23]
-LEFT_ARM = [13, 16, 18, 20, 22]
+USE_PHONE_AS_WATCH = True
+USE_RIGHT_WATCH = False
+RIGHT_ARM = [17, 19, 21, 23]
+LEFT_ARM = [16, 18, 20, 22]
+
+
+class JointSender:
+    def __init__(self, server_address='127.0.0.1', server_port=5005):
+        """Initialize the socket for sending joint data."""
+        self.server_address = server_address
+        self.server_port = server_port
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    def send_joints(self, rarm_joints):
+        """Send rarm_joints to the visualization script."""
+        message = pickle.dumps(rarm_joints)
+        self.sock.sendto(message, (self.server_address, self.server_port))
+
+    def close_socket(self):
+        """Close the socket."""
+        self.sock.close()
 
 
 class IMUSet:
@@ -154,7 +177,10 @@ if __name__ == '__main__':
     
     # specify device
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-    
+ 
+    # init socket to send joint data 
+    joint_sender = JointSender(server_address='127.0.0.1', server_port=5005)
+
     # setup IMU collection
     imu_set = IMUSet(buffer_len=1)
 
@@ -243,11 +269,16 @@ if __name__ == '__main__':
         with torch.no_grad():
             output = model.forward_online(imu_input.squeeze(0), [imu_input.shape[0]])
             pred_pose = output[0] # [24, 9]
+            pred_joint = output[1] # [24, 3]
             pred_tran = output[2] # [3]
 
-        # # freeze left arm pose
+        # freeze left arm pose
         for j in LEFT_ARM:
             pred_pose[j] = torch.eye(3).view(9)
+
+        # send right arm joints to visualizer
+        rarm_joints = pred_joint[RIGHT_ARM].cpu().numpy()  # Extract right arm joint positions
+        joint_sender.send_joints(rarm_joints)
 
         # convert rotmatrix to axis angle
         pose = rotation_matrix_to_axis_angle(pred_pose.view(1, 216)).view(72)
@@ -291,4 +322,5 @@ if __name__ == '__main__':
     # clean up threads
     get_input_thread.join()
     imu_set.stop_reading()
+    joint_sender.close_socket()
     print('Finish.')

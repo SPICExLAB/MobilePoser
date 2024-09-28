@@ -216,7 +216,7 @@ class MobilePoserNet(L.LightningModule):
             pose = pose.view(24, 3, 3)
             return pose, pred_joints.squeeze(0), self.last_root_pos.clone(), contact
 
-        return pose, pred_joints.squeeze(0), self.last_root_pos.clone(), contact
+        return pose, joints.squeeze(0), self.last_root_pos.clone(), contact
 
     def training_step(self, batch, batch_idx):
         loss = self.pose.shared_step(batch)
