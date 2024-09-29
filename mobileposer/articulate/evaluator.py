@@ -289,7 +289,7 @@ class FullMotionEvaluator(BasePoseEvaluator):
         self.fps = fps
         self.joint_mask = joint_mask
 
-    def __call__(self, pose_p, pose_t, joint_pp=None, shape_p=None, shape_t=None, tran_p=None, tran_t=None):
+    def __call__(self, pose_p, pose_t, shape_p=None, shape_t=None, tran_p=None, tran_t=None):
         r"""
         Get the measured errors. The returned tensor in shape [10, 2] contains mean and std of:
           0.  Joint position error (align_joint position aligned).
@@ -326,7 +326,7 @@ class FullMotionEvaluator(BasePoseEvaluator):
         gae = radian_to_degree(angle_between(pose_global_p, pose_global_t).view(pose_p.shape[0], -1))         # N, J
         jkp = ((joint_p[3:] - 3 * joint_p[2:-1] + 3 * joint_p[1:-2] - joint_p[:-3]) * (f ** 3)).norm(dim=2)   # N, J
         jkt = ((joint_t[3:] - 3 * joint_t[2:-1] + 3 * joint_t[1:-2] - joint_t[:-3]) * (f ** 3)).norm(dim=2)   # N, J
-        te = ((joint_pp[f:, :1] - joint_pp[:-f, :1]) - (joint_t[f:, :1] - joint_t[:-f, :1])).norm(dim=2)        # N, 1
+        te = ((joint_p[f:, :1] - joint_p[:-f, :1]) - (joint_t[f:, :1] - joint_t[:-f, :1])).norm(dim=2)*100    # N, 1
         mje = je[:, self.joint_mask] if self.joint_mask is not None else torch.zeros(1)     # N, mJ
         mlae = lae[:, self.joint_mask] if self.joint_mask is not None else torch.zeros(1)   # N, mJ
         mgae = gae[:, self.joint_mask] if self.joint_mask is not None else torch.zeros(1)   # N, mJ

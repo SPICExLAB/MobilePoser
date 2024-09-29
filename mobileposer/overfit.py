@@ -14,6 +14,7 @@ from mobileposer.config import *
 from mobileposer.constants import MODULES
 from mobileposer.data import PoseDataModule
 
+
 # faster training
 torch.set_float32_matmul_precision('medium')
 
