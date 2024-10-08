@@ -21,6 +21,12 @@ from mobileposer.utils.socket_utils import *
 from mobileposer.utils.draw_utils import *
 from mobileposer.visualizer import *
 
+min_time_diff = 0.1  # Example: 100ms
+
+num_devices = len(DEVICE_POSITIONS)
+per_device_counters = {device_id: 0 for device_id in range(num_devices)}
+per_device_delay_sums = {device_id: 0.0 for device_id in range(num_devices)}
+last_log_time = time.time()
 
 if __name__ == "__main__":
     parser = ArgumentParser()
@@ -59,6 +65,7 @@ if __name__ == "__main__":
             for sock in readable:
                 # read data from socket
                 data, addr = sock.recvfrom(CHUNK)
+                receive_time = time.time()  # Timestamp when data is received
 
                 # process received data
                 vis_str, device_id, curr_acc, curr_ori, timestamps = process_data(data)
@@ -72,7 +79,16 @@ if __name__ == "__main__":
                 # Update cube orientation
                 cubes[device_id].set_orientation(sensor_data.virtual_ori[device_id])
 
+                # Calculate delay
+                unix_timestamp = timestamps[0]
+                delay = receive_time - unix_timestamp  # Delay in seconds
+
+                # Update frequency and delay tracking
+                per_device_counters[device_id] += 1
+                per_device_delay_sums[device_id] += delay
+
                 time_diff = curr_timestamp - prev_timestamp
+                
                 if time_diff >= min_time_diff:
                     # send data via socket to live demo
                     send_and_save_data(send_sock, sensor_data.virtual_acc, sensor_data.virtual_ori)
@@ -86,3 +102,20 @@ if __name__ == "__main__":
             os._exit(0)
         except Exception as e:
             print("Exception encountered: ", e)
+
+        # Frequency and Delay Logging
+        current_time = time.time()
+        if current_time - last_log_time >= 1.0:
+            for device_id in range(num_devices):
+                count = per_device_counters[device_id]
+                total_delay = per_device_delay_sums[device_id]
+                frequency = count / (current_time - last_log_time) if (current_time - last_log_time) > 0 else 0
+                average_delay = (total_delay / count) if count > 0 else 0
+
+                print(f"Device ID {device_id}: Frequency = {frequency:.2f} Hz, "
+                      f"Average Delay = {average_delay*1000:.2f} ms")
+
+            # Reset counters and delay sums
+            per_device_counters = {device_id: 0 for device_id in range(num_devices)}
+            per_device_delay_sums = {device_id: 0.0 for device_id in range(num_devices)}
+            last_log_time = current_time

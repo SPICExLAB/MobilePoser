@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.spatial.transform import Rotation as R
+from collections import deque
 
 from mobileposer.config import *
 from mobileposer.constants import *
@@ -8,28 +9,56 @@ from mobileposer.constants import *
 class SensorData:
     """Store sensor data from devices."""
     def __init__(self):
-        self.raw_acc_buffer = {_id: np.zeros((BUFFER_SIZE, 3)) for _id in sensor.device_ids.values()}             # init with zero accel
-        self.raw_ori_buffer = {_id: np.array([[0, 0, 0, 1]] * BUFFER_SIZE) for _id in sensor.device_ids.values()} # init with identity rotations
-        self.calibration_quats = {_id: np.array([0, 0, 0, 1]) for _id in sensor.device_ids.values()}
-        self.virtual_acc = {_id: np.zeros((1, 3)) for _id in sensor.device_ids.values()}
-        self.virtual_ori = {_id: np.array([0, 0, 0, 1]) for _id in sensor.device_ids.values()}
-        self.reference_times = {_id: None for _id in sensor.device_ids.values()}
+        self.raw_acc_buffer = {
+            _id: deque(np.zeros((BUFFER_SIZE, 3)), maxlen=BUFFER_SIZE) 
+            for _id in sensor.device_ids.values()
+        }
+        self.raw_ori_buffer = {
+            _id: deque(np.array([[0, 0, 0, 1]] * BUFFER_SIZE), maxlen=BUFFER_SIZE) 
+            for _id in sensor.device_ids.values()
+        }
+        self.calibration_quats = {
+            _id: np.array([0, 0, 0, 1]) 
+            for _id in sensor.device_ids.values()
+        }
+        self.virtual_acc = {
+            _id: np.zeros((1, 3)) 
+            for _id in sensor.device_ids.values()
+        }
+        self.virtual_ori = {
+            _id: np.array([0, 0, 0, 1]) 
+            for _id in sensor.device_ids.values()
+        }
+        self.reference_times = {
+            _id: None 
+            for _id in sensor.device_ids.values()
+        }
 
     def update(self, device_id, curr_acc, curr_ori, timestamps):
         if self.reference_times[device_id] is None:
             self.reference_times[device_id] = [timestamps[0], timestamps[1]]
 
-        curr_timestamp = self.reference_times[device_id][0] + timestamps[1] - self.reference_times[device_id][1]
+        curr_timestamp = (
+            self.reference_times[device_id][0] + 
+            timestamps[1] - self.reference_times[device_id][1]
+        )
 
-        self.raw_acc_buffer[device_id] = np.concatenate([self.raw_acc_buffer[device_id][1:], curr_acc])
-        self.raw_ori_buffer[device_id] = np.concatenate([self.raw_ori_buffer[device_id][1:], curr_ori])
+        self.raw_acc_buffer[device_id].append(curr_acc.flatten())
+        self.raw_ori_buffer[device_id].append(curr_ori.flatten())
 
         return curr_timestamp
-
+    
     def calibrate(self):
-        for _id in self.raw_ori_buffer.keys():
-            mean_quat = np.mean(self.raw_ori_buffer[_id][-30:], axis=0)
-            self.calibration_quats[_id] = mean_quat
+        for _id, ori_buffer in self.raw_ori_buffer.items():
+            if len(ori_buffer) < 30:
+                print(f"Not enough data to calibrate for device {_id}.")
+                continue
+            # Convert deque to list and then to Rotation objects
+            quaternions = np.array(ori_buffer)[-30:]
+            rotations = R.from_quat(quaternions)
+            # Compute the mean rotation
+            mean_rotation = rotations.mean()
+            self.calibration_quats[_id] = mean_rotation.as_quat()
 
     def get_orientation(self, device_id):
         return self.raw_ori_buffer[device_id][-1]

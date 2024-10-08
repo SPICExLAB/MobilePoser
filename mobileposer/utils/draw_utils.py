@@ -18,64 +18,56 @@ def init_pygame():
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
 
 
-def draw_text(position, textString, size):
-    font = pygame.font.SysFont("Courier", size, True)
-    textSurface = font.render(textString, True, (255, 255, 255, 255), (0, 0, 0, 255))
-    textData = pygame.image.tostring(textSurface, "RGBA", True)
+# Initialize a global cache
+text_cache = {}
+
+def draw_text(position, textString, size=14):
+    if textString not in text_cache:
+        font = pygame.font.SysFont("Courier", size, True)
+        textSurface = font.render(textString, True, (255, 255, 255, 255), (0, 0, 0, 255))
+        textData = pygame.image.tostring(textSurface, "RGBA", True)
+        text_cache[textString] = {
+            "data": textData,
+            "width": textSurface.get_width(),
+            "height": textSurface.get_height()
+        }
+    
+    cache_entry = text_cache[textString]
     glRasterPos3d(*position)
-    glDrawPixels(textSurface.get_width(), textSurface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, textData)
+    glDrawPixels(cache_entry["width"], cache_entry["height"], GL_RGBA, GL_UNSIGNED_BYTE, cache_entry["data"])
 
 
 def draw_cuboid(w=2, h=2, d=0.4, colors=None):
-    w = w / 2
-    h = h / 2
-    d = d / 2
+    w /= 2
+    h /= 2
+    d /= 2
 
-    colors = [(0.0, 1.0, 0.0), (1.0, 0.5, 0.0), (1.0, 0.0, 0.0), (1.0, 1.0, 0.0), (0.0, 0.0, 1.0), (1.0, 0.0, 1.0)]
+    # Define all vertices and colors upfront
+    vertices = [
+        [ w,  d, -h],
+        [-w,  d, -h],
+        [-w,  d,  h],
+        [ w,  d,  h],
+        [ w, -d,  h],
+        [-w, -d,  h],
+        [-w, -d, -h],
+        [ w, -d, -h]
+    ]
+
+    faces = [
+        (0, 1, 2, 3),  # Top
+        (4, 5, 6, 7),  # Bottom
+        (0, 3, 4, 7),  # Front
+        (1, 2, 5, 6),  # Back
+        (0, 1, 5, 4),  # Left
+        (3, 2, 6, 7)   # Right
+    ]
 
     glBegin(GL_QUADS)
-    glColor3f(*colors[0])
-
-    glVertex3f(w, d, -h)
-    glVertex3f(-w, d, -h)
-    glVertex3f(-w, d, h)
-    glVertex3f(w, d, h)
-
-    glColor3f(*colors[1])
-
-    glVertex3f(w, -d, h)
-    glVertex3f(-w, -d, h)
-    glVertex3f(-w, -d, -h)
-    glVertex3f(w, -d, -h)
-
-    glColor3f(*colors[2])
-
-    glVertex3f(w, d, h)
-    glVertex3f(-w, d, h)
-    glVertex3f(-w, -d, h)
-    glVertex3f(w, -d, h)
-
-    glColor3f(*colors[3])
-
-    glVertex3f(w, -d, -h)
-    glVertex3f(-w, -d, -h)
-    glVertex3f(-w, d, -h)
-    glVertex3f(w, d, -h)
-
-    glColor3f(*colors[4])
-
-    glVertex3f(-w, d, h)
-    glVertex3f(-w, d, -h)
-    glVertex3f(-w, -d, -h)
-    glVertex3f(-w, -d, h)
-
-    glColor3f(*colors[5])
-
-    glVertex3f(w, d, -h)
-    glVertex3f(w, d, h)
-    glVertex3f(w, -d, h)
-    glVertex3f(w, -d, -h)
-
+    for face, color in zip(faces, colors):
+        glColor3f(*color)
+        for vertex in face:
+            glVertex3f(*vertices[vertex])
     glEnd()
 
 
@@ -85,8 +77,15 @@ def draw(device_id, ori, acc):
     device_pos = DEVICE_POSITIONS[device_id] 
 
     glTranslatef(*device_pos)
-    draw_text((-0.7, 1.8, 0), list(sensor.device_ids.keys())[device_id], 14)
-    glRotatef(2 * math.acos(w) * 180.00/math.pi, nx, nz, ny)
+    device_label = list(sensor.device_ids.keys())[device_id]
+    draw_text((-0.7, 1.8, 0), device_label, 14)
+    angle = 2 * math.acos(w) * 180.00 / math.pi
+    sin_half_angle = math.sqrt(1.0 - w * w)
+    if sin_half_angle < 0.001:
+        axis = (1.0, 0.0, 0.0)
+    else:
+        axis = (nx / sin_half_angle, ny / sin_half_angle, nz / sin_half_angle)
+    glRotatef(angle, *axis)
     draw_cuboid(1, 1, 1)
 
 
