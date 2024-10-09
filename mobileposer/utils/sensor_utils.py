@@ -60,6 +60,9 @@ class SensorData:
             mean_rotation = rotations.mean()
             self.calibration_quats[_id] = mean_rotation.as_quat()
 
+    def get_timestamps(self, device_id):
+        return self.reference_times[device_id][-1]
+
     def get_orientation(self, device_id):
         return self.raw_ori_buffer[device_id][-1]
 
