@@ -32,8 +32,8 @@ class paths:
     raw_amass = Path("/data/projects/Pose/raw/AMASS")           # TODO: replace with your path
     raw_dip = Path("/data/projects/Pose/raw/DIP_IMU")           # TODO: replace with your path
     raw_imuposer = Path("/data/projects/Pose/raw/IMUPoser")     # TODO: replace with your path
-    eval_dir = root_dir / "data/processed_datasets/eval"
-    processed_datasets = root_dir / "data/processed_datasets"
+    eval_dir = root_dir / "/content/drive/MyDrive/Warwick/Dissertation/processed_datasets"
+    processed_datasets = root_dir / "/content/drive/MyDrive/Warwick/Dissertation/processed_datasets"
 
 
 class model_config:
