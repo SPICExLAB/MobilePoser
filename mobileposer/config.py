@@ -5,8 +5,8 @@ from enum import Enum, auto
 
 class train_hypers:
     """Hyperparameters for training."""
-    batch_size = 256
-    num_workers = 8
+    batch_size = 64
+    num_workers = 4
     num_epochs = 4
     accelerator = "gpu"
     device = 0
