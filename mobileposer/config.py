@@ -28,7 +28,7 @@ class paths:
     root_dir = Path().absolute()
     checkpoint = root_dir / "checkpoints"
     smpl_file = root_dir / "smpl/basicmodel_m.pkl"
-    weights_file = root_dir / "checkpoints/7/poser/base_model.pth"
+    weights_file = root_dir / "checkpoints/7/poser/weights.pth"
     raw_amass = Path("/data/projects/Pose/raw/AMASS")           # TODO: replace with your path
     raw_dip = Path("/data/projects/Pose/raw/DIP_IMU")           # TODO: replace with your path
     raw_imuposer = Path("/data/projects/Pose/raw/IMUPoser")     # TODO: replace with your path
