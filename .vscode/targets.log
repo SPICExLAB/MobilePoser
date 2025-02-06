@@ -10,7 +10,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 make: *** No rule to make target `all'.  Stop.
 
 
-# Make data base, printed on Tue Dec 31 00:38:21 2024
+# Make data base, printed on Thu Feb  6 15:31:23 2025
 
 # Variables
 
@@ -20,6 +20,8 @@ make: *** No rule to make target `all'.  Stop.
 ?F = $(notdir $?)
 # environment
 VSCODE_CRASH_REPORTER_PROCESS_TYPE = extensionHost
+# environment
+NVM_INC = /Users/zahrarahman/.nvm/versions/node/v12.22.12/include/node
 # automatic
 ?D = $(patsubst %/,%,$(dir $?))
 # automatic
@@ -43,13 +45,15 @@ INFOPATH = /opt/homebrew/share/info:
 # environment
 VSCODE_CWD = /
 # environment
-PATH = /opt/homebrew/bin:/Users/zahrarahman/miniconda3/bin:/Users/zahrarahman/miniconda3/condabin:/Users/zahrarahman/.cabal/bin:/Users/zahrarahman/.ghcup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Library/TeX/texbin:/Applications/quarto/bin
+PATH = /Users/zahrarahman/.nvm/versions/node/v12.22.12/bin:/opt/homebrew/bin:/Users/zahrarahman/miniconda3/bin:/Users/zahrarahman/miniconda3/condabin:/Users/zahrarahman/.cabal/bin:/Users/zahrarahman/.ghcup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Library/TeX/texbin:/Applications/quarto/bin
+# environment
+NVM_BIN = /Users/zahrarahman/.nvm/versions/node/v12.22.12/bin
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # default
 .FEATURES := target-specific order-only second-expansion else-if archives jobserver check-symlink
 # environment
-SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.CHlEwiNAHB/Listeners
+SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.f09GxErnvN/Listeners
 # automatic
 %F = $(notdir $%)
 # environment
@@ -67,13 +71,15 @@ HOME = /Users/zahrarahman
 # default
 MAKEFILEPATH = $(shell /usr/bin/xcode-select -print-path 2>/dev/null || echo /Developer)/Makefiles
 # environment
-VSCODE_CODE_CACHE_PATH = /Users/zahrarahman/Library/Application Support/Code/CachedData/fabdb6a30b49f79a7aba0f2ad9df9b399473380f
+VSCODE_CODE_CACHE_PATH = /Users/zahrarahman/Library/Application Support/Code/CachedData/cd4ee3b1c348a13bafd8f9ad8060705f6d4b9cba
 # environment
 LOGNAME = zahrarahman
 # environment
 APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
 # environment
 CONDA_PROMPT_MODIFIER = (base) 
+# environment
+NVM_CD_FLAGS = -q
 # environment
 VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # automatic
@@ -119,13 +125,13 @@ MFLAGS = -Rrqp
 # automatic
 *D = $(patsubst %/,%,$(dir $*))
 # environment
-XPC_SERVICE_NAME = application.com.microsoft.VSCode.35942587.35942594
+NVM_DIR = /Users/zahrarahman/.nvm
+# environment
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.38877787.38877793
 # environment
 HOMEBREW_PREFIX = /opt/homebrew
 # automatic
 +D = $(patsubst %/,%,$(dir $+))
-# environment
-VSCODE_L10N_BUNDLE_LOCATION = 
 # automatic
 +F = $(notdir $+)
 # environment
@@ -151,11 +157,11 @@ MAKELEVEL := 0
 # environment
 CONDA_PREFIX = /Users/zahrarahman/miniconda3
 # environment
-VSCODE_PID = 82212
+VSCODE_PID = 18093
 # environment
 LANG = C
 # variable set hash-table stats:
-# Load=70/1024=7%, Rehash=0, Collisions=2/90=2%
+# Load=73/1024=7%, Rehash=0, Collisions=2/93=2%
 
 # Pattern-specific Variable Values
 
@@ -163,7 +169,7 @@ LANG = C
 
 # Directories
 
-# . (device 16777233, inode 35828273): 21 files, no impossibilities.
+# . (device 16777232, inode 35828273): 21 files, no impossibilities.
 
 # 21 files, no impossibilities in 1 directories.
 
@@ -237,6 +243,6 @@ GNUmakefile:
 # strcache size: total = 0 / max = 0 / min = 4096 / avg = 0
 # strcache free: total = 0 / max = 0 / min = 4096 / avg = 0
 
-# Finished Make data base on Tue Dec 31 00:38:21 2024
+# Finished Make data base on Thu Feb  6 15:31:23 2025
 
  
