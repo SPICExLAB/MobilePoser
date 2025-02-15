@@ -122,7 +122,7 @@ def process_amass():
             'contact': out_contact
         }
         data_path = paths.processed_datasets / f"{ds_name}.pt"
-        #torch.save(data, data_path)
+        torch.save(data, data_path)
         print(f"Synthetic AMASS dataset is saved at: {data_path}")
 
 
