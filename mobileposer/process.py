@@ -113,7 +113,6 @@ def process_amass():
             b += l
 
         print("Saving...")
-        print(out_vacc.shape, out_pose.shape)
         data = {
             'joint': out_joint,
             'pose': out_pose,
