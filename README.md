@@ -30,7 +30,7 @@ pip install -e .
 ### Download Training Data
 1. Register and download the AMASS dataset from [here](https://amass.is.tue.mpg.de/). We use 'SMPLH+G' for each dataset. 
 2. Register and download the DIP-IMU dataset from [here](https://dip.is.tuebingen.mpg.de/). Download the raw (unormalized) data.
-3. Request access to the TotalCapture dataset [here](https://cvssp.org/data/totalcapture/). 
+3. Request access to the TotalCapture dataset [here](https://cvssp.org/data/totalcapture/). Download Vicon Groundtruth in the raw folder, and IMU data in the IMU folder. 
 4. Download the IMUPoser dataset from [here](https://github.com/FIGLAB/IMUPoser).
 
 Once downloaded, your directory might appear as follows:
@@ -55,6 +55,16 @@ data
     │   ├── P3
     │   ├── ...
     │   └── P10
+    └── TotalCapture/
+            ├── IMU/
+            │   ├── s1_acting1.pkl
+            │   ├── ...
+            └── raw/
+                ├── S1/
+                │   ├── acting1/
+                │   │   ├── gt_skel_gbl_ori.txt
+                │   │   ├── gt_skel_gbl_pos.txt
+                │   ├── ...
 ```
 
 ### Setup Training Data 

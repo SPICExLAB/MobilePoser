@@ -23,14 +23,16 @@ body_model = ParametricModel(paths.smpl_file)
 def _syn_acc(v, smooth_n=4):
     """Synthesize accelerations from vertex positions."""
     mid = smooth_n // 2
-    acc = torch.stack([(v[i] + v[i + 2] - 2 * v[i + 1]) * 3600 for i in range(0, v.shape[0] - 2)])
+    scale_factor = TARGET_FPS ** 2 
+
+    acc = torch.stack([(v[i] + v[i + 2] - 2 * v[i + 1]) * scale_factor for i in range(0, v.shape[0] - 2)])
     acc = torch.cat((torch.zeros_like(acc[:1]), acc, torch.zeros_like(acc[:1])))
+
     if mid != 0:
         acc[smooth_n:-smooth_n] = torch.stack(
-            [(v[i] + v[i + smooth_n * 2] - 2 * v[i + smooth_n]) * 3600 / smooth_n ** 2
+            [(v[i] + v[i + smooth_n * 2] - 2 * v[i + smooth_n]) * scale_factor / smooth_n ** 2
              for i in range(0, v.shape[0] - smooth_n * 2)])
     return acc
-
 
 def process_amass():
     def _foot_ground_probs(joint):
@@ -122,7 +124,7 @@ def process_amass():
             'contact': out_contact
         }
         data_path = paths.processed_datasets / f"{ds_name}.pt"
-        #torch.save(data, data_path)
+        torch.save(data, data_path)
         print(f"Synthetic AMASS dataset is saved at: {data_path}")
 
 

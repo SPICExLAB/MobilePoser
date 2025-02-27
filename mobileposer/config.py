@@ -34,7 +34,8 @@ class paths:
     raw_imuposer = Path("/data/projects/Pose/raw/IMUPoser")     # TODO: replace with your path
     eval_dir = root_dir / "data/processed_datasets/eval"
     processed_datasets = root_dir / "data/processed_datasets"
-
+    raw_totalcapture_official = root_dir / "data/raw/TotalCapture/raw"  # TODO: replace with your path
+    calibrated_totalcapture = root_dir / "data/raw/TotalCapture/IMU"  # TODO: replace with your path
 
 class model_config:
     """MobilePoser Model configurations."""
